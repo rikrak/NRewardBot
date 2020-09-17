@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace NRewardBot.Config
+﻿namespace NRewardBot.Config
 {
-    internal class Configuration : IConfiguration
+    internal class Configuration : IAllConfiguration
     {
         public bool Headless { get; set; }
         public bool Mobile { get; set; }
         public bool Desktop { get; set; }
         public bool Quiz { get; set; }
         public bool Email { get; set; }
+
+        public string SeleniumUrl { get; set; }
+        public string DriverLocation { get; set; }
 
         public void All(bool value)
         {
@@ -19,5 +19,6 @@ namespace NRewardBot.Config
             this.Mobile = value;
             this.Quiz = value;
         }
+
     }
 }
