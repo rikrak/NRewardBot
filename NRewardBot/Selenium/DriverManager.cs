@@ -12,7 +12,12 @@ using NRewardBot.SearchTerms.GoogleTrends;
 
 namespace NRewardBot.Selenium
 {
-    public class DriverManager
+    public interface IDriverManager
+    {
+        Task<string> GetLatestDriver();
+    }
+
+    public class DriverManager : IDriverManager
     {
         private readonly ISeleniumConfiguration _config;
 
@@ -21,9 +26,24 @@ namespace NRewardBot.Selenium
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public async Task GetLatestDriver()
+        private Task ClearOldDriver()
+        {
+            var folder = GetDriverFolder();
+            var driverFilePath = Path.Combine(folder, "chromedriver.exe");
+
+            if (File.Exists(driverFilePath))
+            {
+                File.Delete(driverFilePath);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<string> GetLatestDriver()
         {
             string latestVersion;
+
+            await ClearOldDriver();
             using (var client = new HttpClient())
             {
                 var versionUrl = _config.SeleniumUrl;
@@ -53,21 +73,31 @@ namespace NRewardBot.Selenium
                 }
 
                 var unzipLocation = GetDriverFolder();
+                string driverFilePath;
                 using (var driverStream = await client.GetStreamAsync(url))
                 {
                     using (var z = new ZipArchive(driverStream))
                     {
-                        foreach (var entry in z.Entries)
+                        var driverEntry = z.Entries.First(e => e.FullName.ToLower().Contains("chromedriver"));
+                        driverFilePath = Path.Combine(unzipLocation, driverEntry.FullName);
+
+                        using (var fs = File.OpenWrite(driverFilePath))
                         {
-                            using (var fs = File.OpenWrite(Path.Combine(unzipLocation, entry.FullName)))
-                            {
-                                await entry.Open().CopyToAsync(fs);
-                                await fs.FlushAsync();
-                            }
+                            await driverEntry.Open().CopyToAsync(fs);
+                            await fs.FlushAsync();
                         }
                     }
                 }
-            
+
+                // write a file that contains version information for debug purposes
+                var versionFilePath = Path.Combine(unzipLocation, "chromedriver.version.txt");
+                if (File.Exists(versionFilePath))
+                {
+                    File.Delete(versionFilePath);
+                }
+                File.WriteAllText(versionFilePath, latestVersion);
+
+                return driverFilePath;
             }
         }
 

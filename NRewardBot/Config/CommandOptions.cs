@@ -4,6 +4,12 @@ namespace NRewardBot.Config
 {
     internal class CommandOptions
     {
+        [Option('u', "username", Required = false)]
+        public string Username { get; set; }
+
+        [Option('p', "password", Required = false)]
+        public string Password { get; set; }
+
         [Option('h', "headless")]
         public bool? Headless { get; set;  }
 

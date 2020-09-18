@@ -11,6 +11,9 @@
         public string SeleniumUrl { get; set; }
         public string DriverLocation { get; set; }
 
+        public string Username { get; set; }
+        public string Password { get; set; }
+
         public void All(bool value)
         {
             this.Desktop = value;

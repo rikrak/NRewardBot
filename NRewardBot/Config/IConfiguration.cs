@@ -1,6 +1,6 @@
 ﻿namespace NRewardBot.Config
 {
-    public interface IAllConfiguration : IConfiguration, ISeleniumConfiguration
+    public interface IAllConfiguration : IConfiguration, ISeleniumConfiguration, ICredentials
     {
 
     }
@@ -11,6 +11,11 @@
         bool Desktop { get; }
         bool Quiz { get; }
         bool Email { get; }
+    }
 
+    public interface ICredentials
+    {
+        string Username { get; }
+        string Password { get; }
     }
 }

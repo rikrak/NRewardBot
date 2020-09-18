@@ -22,6 +22,9 @@ namespace NRewardBot.Config
                 .ParseArguments<CommandOptions>(arguments)
                 .WithParsed(o =>
                 {
+                    configuration.Username = o.Username;
+                    configuration.Password = o.Password;
+
                     if (o.All.HasValue && o.All.Value)
                     {
                         configuration.All(true);

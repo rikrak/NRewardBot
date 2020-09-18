@@ -13,8 +13,10 @@ namespace NRewardBot.Cmd
             var config = configFactory.GetConfiguration(args);
 
             var driver = new DriverManager(config);
-            await driver.GetLatestDriver();
 
+            var scenario = new RewardScenario(new WebDriverFactory(config, driver));
+
+            await scenario.Test();
         }
     }
 }
