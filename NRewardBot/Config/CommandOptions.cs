@@ -27,5 +27,8 @@ namespace NRewardBot.Config
 
         [Option('a', "all")]
         public bool? All      { get; set; }
+
+        [Option("debug", Default = false, Required = false)]
+        public bool Debug { get; set; }
     }
 }

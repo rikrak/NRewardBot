@@ -16,12 +16,13 @@ namespace NRewardBot.Config
 
             var baseConfig = BaseConfiguration.Bootstrap();
             baseConfig.ApplyTo(configuration);
-
+            var attachDebugger = false;
 
             CommandLine.Parser.Default
                 .ParseArguments<CommandOptions>(arguments)
                 .WithParsed(o =>
                 {
+                    attachDebugger = o.Debug;
                     configuration.Username = o.Username;
                     configuration.Password = o.Password;
 
@@ -62,6 +63,10 @@ namespace NRewardBot.Config
                     Environment.Exit(2);
                 });
 
+            if (attachDebugger)
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
             return configuration;
         }
     }
