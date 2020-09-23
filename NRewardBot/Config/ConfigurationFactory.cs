@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using CommandLine;
 
 namespace NRewardBot.Config
@@ -23,8 +24,29 @@ namespace NRewardBot.Config
                 .WithParsed(o =>
                 {
                     attachDebugger = o.Debug;
-                    configuration.Username = o.Username;
-                    configuration.Password = o.Password;
+
+                    if (string.IsNullOrWhiteSpace(o.Username))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Please enter you username:  ");
+                        configuration.Username = Console.ReadLine();
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        configuration.Username = o.Username;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(o.Password))
+                    {
+                        Console.WriteLine();
+                        configuration.Password = ReadPassword();
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        configuration.Password = o.Password;
+                    }
 
                     if (o.All.HasValue && o.All.Value)
                     {
@@ -57,6 +79,8 @@ namespace NRewardBot.Config
                             configuration.Quiz = o.Quiz.Value;
                         }
                     }
+
+
                 })
                 .WithNotParsed(err =>
                 {
@@ -68,6 +92,36 @@ namespace NRewardBot.Config
                 System.Diagnostics.Debugger.Launch();
             }
             return configuration;
+        }
+
+        private static string ReadPassword()
+        {
+            Console.Write("Please enter your password: ");
+            ConsoleKeyInfo keyInfo;
+            var password = new StringBuilder();
+            do
+            {
+                keyInfo = Console.ReadKey(true);
+                // Skip if Backspace or Enter is Pressed
+                if (keyInfo.Key != ConsoleKey.Backspace && keyInfo.Key != ConsoleKey.Enter)
+                {
+                    password.Append(keyInfo.KeyChar);
+                    Console.Write("*");
+                }
+                else
+                {
+                    if (keyInfo.Key == ConsoleKey.Backspace && password.Length > 0)
+                    {
+                        // Remove last character if Backspace is Pressed
+                        password.Remove(password.Length - 1, 1);
+                        Console.Write("X");
+                    }
+                }
+            }
+            // Stops Getting Password Once Enter is Pressed
+            while (keyInfo.Key != ConsoleKey.Enter);
+
+            return password.ToString();
         }
     }
 }

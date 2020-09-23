@@ -26,7 +26,7 @@ namespace NRewardBot.Selenium
                     .PressNext()
                     .WithPassword(this._credentials.Password)
                     .PressSubmit();
-                driver.DoWait(2);
+                driver.DoWait(10); // wait for MFA to be completed
 
                 driver.Close();
             }
