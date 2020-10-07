@@ -3,7 +3,7 @@ using OpenQA.Selenium;
 
 namespace NRewardBot.Selenium.Elements
 {
-    internal class ElementBase
+    public class ElementBase
     {
         #region Constructors
 

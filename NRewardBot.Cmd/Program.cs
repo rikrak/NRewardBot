@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NRewardBot.Config;
+using NRewardBot.SearchTerms.GoogleTrends;
 using NRewardBot.Selenium;
 
 namespace NRewardBot.Cmd
@@ -15,8 +16,8 @@ namespace NRewardBot.Cmd
             var driver = new DriverManager(config);
 
             var webDriverFactory = new WebDriverFactory(config, driver);
-
-            var scenario = new RewardScenario(webDriverFactory, config);
+            var searchTermProvider = new SearchTermProvider();
+            var scenario = new RewardScenario(webDriverFactory, config,searchTermProvider);
 
             await scenario.Test();
         }
