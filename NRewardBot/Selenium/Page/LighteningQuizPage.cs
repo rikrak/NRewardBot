@@ -1,0 +1,54 @@
+﻿using System;
+using System.Runtime.CompilerServices;
+using OpenQA.Selenium;
+
+namespace NRewardBot.Selenium.Page
+{
+    public class LighteningQuizPage : OfferPageBase, IOfferPage
+    {
+        public const string AnswerOption1Id = "rqAnswerOption0";
+
+        public LighteningQuizPage(IWebDriver driver) : base(driver)
+        {
+        }
+
+        private IWebElement GetAnswerOption(int idx)
+        {
+            return this.Driver.WaitUntilElementIsDisplayed(By.Id($"rqAnswerOption{idx}"), throwOnTimeout:false, TimeSpan.FromSeconds(2));
+        }
+
+        public override void CompleteOffer()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                var firstAnswer = GetAnswerOption(0);
+                if (firstAnswer != null)
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        var answerElement = GetAnswerOption(j);
+                        if (answerElement != null)
+                        {
+                            this.Driver.DoWait(2);
+                            this.Driver.ScriptExecute(
+                                $"document.querySelectorAll('#rqAnswerOption{j}').forEach(el=>el.click());");
+                        }
+                    }
+                }
+
+                if (this.Driver.ElementExists(By.Id("quizCompleteContainer")))
+                {
+                    break;
+                }
+            }
+
+            var completeButtonElement = this.Driver.WaitUntilElementIsDisplayed(By.CssSelector(".cico.btCloseBack"), throwOnTimeout: false);
+            completeButtonElement?.Click();
+        }
+
+        public static bool IsLightningQuizPage(IWebDriver driver)
+        {
+            return driver.ElementExists(By.Id("rqAnswerOption0"));
+        }
+    }
+}

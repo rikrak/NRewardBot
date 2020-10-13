@@ -19,7 +19,7 @@ namespace NRewardBot.Cmd
             var searchTermProvider = new SearchTermProvider();
             var scenario = new RewardScenario(webDriverFactory, config,searchTermProvider);
 
-            await scenario.Test();
+            await scenario.DailyOffersAndSearches();
         }
     }
 }

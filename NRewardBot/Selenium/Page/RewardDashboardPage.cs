@@ -7,11 +7,14 @@ namespace NRewardBot.Selenium.Page
 {
     internal class RewardDashboardPage : PageBase
     {
+        private readonly string _windowHandle;
         private const string PageUrl = "https://account.microsoft.com/rewards/dashboard";
 
         #region Constructor
         public RewardDashboardPage(IWebDriver driver) : base(driver)
         {
+            this._windowHandle = driver.CurrentWindowHandle;
+
         }
         #endregion
 
@@ -32,5 +35,9 @@ namespace NRewardBot.Selenium.Page
             return offerLinks.Select(l => new OfferLinkElement(this.Driver, l)).ToArray();
         }
 
+        public void SwitchTo()
+        {
+            this.Driver.SwitchTo().Window(this._windowHandle);
+        }
     }
 }

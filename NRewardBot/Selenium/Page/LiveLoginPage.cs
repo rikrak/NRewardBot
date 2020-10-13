@@ -1,4 +1,5 @@
-﻿using NRewardBot.Selenium.Elements;
+﻿using System;
+using NRewardBot.Selenium.Elements;
 using OpenQA.Selenium;
 
 namespace NRewardBot.Selenium.Page
@@ -10,6 +11,8 @@ namespace NRewardBot.Selenium.Page
         private const string UsernameInputName = "loginfmt";
         private const string PasswordInputName = "passwd";
         private const string SubmitButtonId = "idSIButton9";
+        private const string DoNotShowThisAgainId = "KmsiCheckboxField";
+
         #region Constructor
         public LiveLoginPage(IWebDriver driver) : base(driver)
         {
@@ -52,6 +55,25 @@ namespace NRewardBot.Selenium.Page
         public LiveLoginPage PressSubmit()
         {
             this.SubmitButtonElement.Click();
+            return this;
+        }
+
+        public LiveLoginPage DoMultiFactorAuth()
+        {
+            // simple wait
+            this.Driver.DoWait(20);
+            return this;
+        }
+
+        public LiveLoginPage PressStayLoggedIn()
+        {
+            var element = this.Driver.WaitUntilElementIsDisplayed(By.Id(DoNotShowThisAgainId), throwOnTimeout: false, TimeSpan.FromSeconds(3));
+
+            if (element != null)
+            {
+                this.SubmitButtonElement.Click();
+            }
+
             return this;
         }
 
