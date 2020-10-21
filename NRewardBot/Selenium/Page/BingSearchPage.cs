@@ -6,6 +6,10 @@ namespace NRewardBot.Selenium.Page
 {
     internal class BingSearchPage : PageBase
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private static readonly Random Random = new Random(DateTime.Now.Millisecond);
         private const string PageUrl = "https://www.bing.com/search";
         private const string SearchTermElementId = "sb_form_q";
@@ -25,6 +29,7 @@ namespace NRewardBot.Selenium.Page
 
         public BingSearchPage Search(string term)
         {
+            Log.Info("Searching for: {term}", term);
             this.Driver.Navigate().GoToUrl(PageUrl);
             this.Driver.WaitUntilElementIsDisplayed(By.Id(SearchTermElementId));
             this.SearchTermInputElement.ClearAndSendKeys(term);

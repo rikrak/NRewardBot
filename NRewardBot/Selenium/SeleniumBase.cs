@@ -11,6 +11,10 @@ namespace NRewardBot.Selenium
 {
     public class WebDriverFactory
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private readonly IConfiguration _configuration;
         private readonly IDriverManager _driverManager;
 

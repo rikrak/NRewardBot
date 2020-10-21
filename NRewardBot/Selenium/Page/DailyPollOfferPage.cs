@@ -5,6 +5,10 @@ namespace NRewardBot.Selenium.Page
 {
     public class DailyPollOfferPage : OfferPageBase, IOfferPage
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private static readonly string[] OptionIds = new[] { "btoption0", "btoption1"};
         private static readonly Random Randomiser = new Random(DateTime.Now.Millisecond);
 
@@ -26,6 +30,7 @@ namespace NRewardBot.Selenium.Page
 
         public override void CompleteOffer()
         {
+            Log.Info("Completing the daily poll");
             var idToFind = OptionIds[Randomiser.Next(OptionIds.Length)];
             var elementLocator = By.Id(idToFind);
 

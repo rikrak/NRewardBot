@@ -10,6 +10,10 @@ namespace NRewardBot.Selenium
 {
     public class RewardScenario
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private readonly WebDriverFactory _driverFactory;
         private readonly ICredentials _credentials;
         private readonly SearchTermProvider _searchTermProvider;
@@ -30,9 +34,11 @@ namespace NRewardBot.Selenium
 
                 await Task.WhenAll(loginTask, searchTermsTask);
 
+                Log.Info("Proecessing daily offers");
                 var rewardDashboard = RewardDashboardPage.NavigateTo(driver);
                 var openOfferLinks = rewardDashboard.GetOpenOffers();
-
+                
+                Log.Info("There are {count} offer(s)", openOfferLinks.Count);
                 foreach (var link in openOfferLinks)
                 {
                     driver.DoWait(3);
@@ -44,6 +50,7 @@ namespace NRewardBot.Selenium
                     rewardDashboard.SwitchTo();
                 }
 //#here -> line ~593 in https://github.com/LjMario007/Microsoft-Rewards-Bot/blob/master/ms_rewards.py
+
 
                 var searchTerms = searchTermsTask.Result.ToList();
                 searchTerms.Shuffle();
@@ -65,6 +72,7 @@ namespace NRewardBot.Selenium
 
         private Task DoLogin(IWebDriver driver)
         {
+            Log.Info("Processing login to Microsoft account");
             var login = LiveLoginPage.NavigateTo(driver);
             driver.DoWait(2);
             login.WithUsername(this._credentials.Username)

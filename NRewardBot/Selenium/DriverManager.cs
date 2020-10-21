@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NRewardBot.Config;
-using NRewardBot.SearchTerms.GoogleTrends;
 
 namespace NRewardBot.Selenium
 {
@@ -19,6 +15,10 @@ namespace NRewardBot.Selenium
 
     public class DriverManager : IDriverManager
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private readonly ISeleniumConfiguration _config;
 
         public DriverManager(ISeleniumConfiguration config)
@@ -28,6 +28,7 @@ namespace NRewardBot.Selenium
 
         private Task ClearOldDriver()
         {
+            Log.Info("Removing old chrome driver");
             var folder = GetDriverFolder();
             var driverFilePath = Path.Combine(folder, "chromedriver.exe");
 
@@ -41,6 +42,7 @@ namespace NRewardBot.Selenium
 
         public async Task<string> GetLatestDriver()
         {
+            Log.Info("Getting the latest Chrome Driver version from {url}", _config.SeleniumUrl);
             string latestVersion;
 
             await ClearOldDriver();
@@ -71,6 +73,7 @@ namespace NRewardBot.Selenium
                     default:
                         throw new NotSupportedException($"{Environment.OSVersion.Platform} is not supported");
                 }
+                Log.Info("Getting Chrome Driver version {version} from {url}", latestVersion, url);
 
                 var unzipLocation = GetDriverFolder();
                 string driverFilePath;
@@ -96,6 +99,7 @@ namespace NRewardBot.Selenium
                     File.Delete(versionFilePath);
                 }
                 File.WriteAllText(versionFilePath, latestVersion);
+                Log.Info("Chrome Driver version {version} written to {location}", latestVersion, unzipLocation);
 
                 return driverFilePath;
             }

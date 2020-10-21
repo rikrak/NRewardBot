@@ -6,6 +6,10 @@ namespace NRewardBot.Selenium.Page
 {
     public class LighteningQuizPage : OfferPageBase, IOfferPage
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         public const string AnswerOption1Id = "rqAnswerOption0";
 
         public LighteningQuizPage(IWebDriver driver) : base(driver)
@@ -19,6 +23,7 @@ namespace NRewardBot.Selenium.Page
 
         public override void CompleteOffer()
         {
+            Log.Info("Attempting a lightening quiz");
             for (int i = 0; i < 10; i++)
             {
                 var firstAnswer = GetAnswerOption(0);

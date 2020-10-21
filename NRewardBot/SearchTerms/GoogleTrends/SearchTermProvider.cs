@@ -15,6 +15,10 @@ namespace NRewardBot.SearchTerms.GoogleTrends
     /// </remarks>
     public class SearchTermProvider
     {
+        #region Logger
+        private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+        #endregion
+
         private static readonly Random Randomiser = new Random(DateTime.Now.Millisecond);
 
         public async Task<IEnumerable<string>> GetTerms()
@@ -34,6 +38,7 @@ namespace NRewardBot.SearchTerms.GoogleTrends
             {
                 foreach (var date in GetDates())
                 {
+                    Log.Info("Getting search terms from Google Trends for {date}", date.ToShortDateString());
                     var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=US&ns=15";
                     client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
