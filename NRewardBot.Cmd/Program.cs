@@ -23,10 +23,20 @@ namespace NRewardBot.Cmd
             var driver = new DriverManager(config);
 
             var webDriverFactory = new WebDriverFactory(config, driver);
-            var searchTermProvider = new SearchTermProvider();
-            var scenario = new RewardScenario(webDriverFactory, config,searchTermProvider);
 
-            await scenario.DailyOffersAndSearches();
+            if (config.Quiz)
+            {
+                var rewardScenario = new RewardScenario(webDriverFactory, config);
+                await rewardScenario.DailyOffers();
+            }
+
+            if (config.Desktop || config.Mobile)
+            {
+                var searchTermProvider = new SearchTermProvider();
+                var searchScenario = new SearchScenario(webDriverFactory, config, searchTermProvider, config);
+                await searchScenario.DoSearches();
+            }
+
             Log.Info("All Done");
         }
     }

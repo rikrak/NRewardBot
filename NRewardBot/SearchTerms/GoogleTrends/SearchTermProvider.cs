@@ -39,7 +39,7 @@ namespace NRewardBot.SearchTerms.GoogleTrends
                 foreach (var date in GetDates())
                 {
                     Log.Info("Getting search terms from Google Trends for {date}", date.ToShortDateString());
-                    var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=US&ns=15";
+                    var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=GB&ns=15";
                     client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
                     var trendsRaw = await client.GetStringAsync(url);
@@ -64,6 +64,7 @@ namespace NRewardBot.SearchTerms.GoogleTrends
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(Randomiser.Next(3, 5)));
+
                 }
             }
 
@@ -71,21 +72,25 @@ namespace NRewardBot.SearchTerms.GoogleTrends
         }
 
         /// <summary>
-        /// Returns a list of dates from today to 3 days ago
+        /// Returns a list of dates from today to a 20 days ago
         /// </summary>
         /// <remarks>Derived from ms_rewards.py => get_dates(days_to_get=4)</remarks>
         /// <param name="numberOfDates"># of days to get from api</param>
         /// <returns>list of dates</returns>
         public IEnumerable<DateTime> GetDates(int numberOfDates = 4)
         {
-            /*
-            Returns a list of dates from today to 3 days ago in year, month, day format
-                :param days_to_get: # of days to get from api
-                :return: list of string of dates in year, month, day format
-            */
+            var offsets = new List<int>();
+            while (offsets.Count < numberOfDates)
+            {
+                var candidate = Randomiser.Next(0, 20);
+                if (!offsets.Contains(candidate))
+                {
+                    offsets.Add(-candidate);
+                }
+            }
             for (int i = 0; i < numberOfDates; i++)
             {
-                yield return DateTime.Today.AddDays(-i);
+                yield return DateTime.Today.AddDays(offsets[i]);
             }
         }
     }

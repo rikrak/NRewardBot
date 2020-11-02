@@ -16,23 +16,22 @@ namespace NRewardBot.Selenium
 
         private readonly WebDriverFactory _driverFactory;
         private readonly ICredentials _credentials;
-        private readonly SearchTermProvider _searchTermProvider;
-        
-        public RewardScenario(WebDriverFactory driverFactory, ICredentials credentials, SearchTermProvider searchTermProvider)
+
+        #region Constructor
+
+        public RewardScenario(WebDriverFactory driverFactory, ICredentials credentials)
         {
             _driverFactory = driverFactory ?? throw new ArgumentNullException(nameof(driverFactory));
             _credentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
-            _searchTermProvider = searchTermProvider ?? throw new ArgumentNullException(nameof(searchTermProvider));
         }
 
-        public async Task DailyOffersAndSearches()
+        #endregion
+
+        public async Task DailyOffers()
         {
             using (var driver = await _driverFactory.GetDriver(UserAgent.Desktop))
             {
-                var loginTask =  DoLogin(driver);
-                var searchTermsTask = _searchTermProvider.GetTerms();
-
-                await Task.WhenAll(loginTask, searchTermsTask);
+                await DoLogin(driver);
 
                 Log.Info("Proecessing daily offers");
                 var rewardDashboard = RewardDashboardPage.NavigateTo(driver);
@@ -50,20 +49,6 @@ namespace NRewardBot.Selenium
                     rewardDashboard.SwitchTo();
                 }
 //#here -> line ~593 in https://github.com/LjMario007/Microsoft-Rewards-Bot/blob/master/ms_rewards.py
-
-
-                var searchTerms = searchTermsTask.Result.ToList();
-                searchTerms.Shuffle();
-                var searchPage = BingSearchPage.NavigateTo(driver);
-                var maxSearches = 30;
-                foreach (var searchTerm in searchTerms)
-                {
-                    searchPage.Search(searchTerm);
-                    if (--maxSearches < 0)
-                    {
-                        break;
-                    }
-                }
 
                 driver.Close();
             }
