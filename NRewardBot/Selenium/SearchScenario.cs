@@ -56,7 +56,10 @@ namespace NRewardBot.Selenium
 
                 var searchTerms = searchTermsTask.Result.ToList();
                 searchTerms.Shuffle();
+
                 var searchPage = BingSearchPage.NavigateTo(driver);
+                searchPage = searchPage.EnsureLoggedIn().AcceptCookies();
+                
                 var maxSearches = userAgent == UserAgent.Mobile ? 20 : 30;
                 foreach (var searchTerm in searchTerms)
                 {

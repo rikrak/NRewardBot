@@ -27,6 +27,28 @@ namespace NRewardBot.Selenium.Page
             return new BingSearchPage(driver);
         }
 
+        public BingSearchPage EnsureLoggedIn()
+        {
+            // check for Desktop and mobile version of login button
+            var loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("id_l"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
+            if (loginButton == null)
+            {
+                var burgerMenu = this.Driver.WaitUntilElementIsDisplayed(By.Id("mHamburger"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
+                burgerMenu?.Click();
+                loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("hb_s"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
+            }
+                
+            loginButton?.Click();
+            return this;
+        }
+
+        public BingSearchPage AcceptCookies()
+        {
+            var cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
+            cookieButton?.Click();
+            return this;
+        }
+
         public BingSearchPage Search(string term)
         {
             Log.Info("Searching for: {term}", term);

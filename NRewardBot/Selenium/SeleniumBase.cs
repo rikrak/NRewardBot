@@ -37,6 +37,8 @@ namespace NRewardBot.Selenium
             browserOptions.AddArgument("--no-sandbox");
             browserOptions.AddArgument("--disable-extensions");
             browserOptions.AddArgument("--disable-dev-shm-usage");
+            browserOptions.AddArgument("--start-maximized");
+
             if (this._configuration.Headless)
             {
                 browserOptions.AddArgument("--headless");
