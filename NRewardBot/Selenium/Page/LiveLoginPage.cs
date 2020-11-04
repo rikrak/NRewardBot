@@ -87,5 +87,14 @@ namespace NRewardBot.Selenium.Page
             return this;
         }
 
+        public void CheckForPasswordError()
+        {
+            var element = this.Driver.WaitUntilElementIsDisplayed(By.Id("passwordError"), throwOnTimeout: false, TimeSpan.FromSeconds(1));
+            if (element != null)
+            {
+                throw new Exception("The password did not work :-(");
+            }
+        }
+
     }
 }

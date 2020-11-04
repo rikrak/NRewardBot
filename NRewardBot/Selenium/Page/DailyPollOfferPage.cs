@@ -28,7 +28,7 @@ namespace NRewardBot.Selenium.Page
             }
         }
 
-        public override void CompleteOffer()
+        public override IOfferPage CompleteOffer()
         {
             Log.Info("Completing the daily poll");
             var idToFind = OptionIds[Randomiser.Next(OptionIds.Length)];
@@ -37,6 +37,7 @@ namespace NRewardBot.Selenium.Page
             var optionElement = this.Driver.WaitUntilElementIsDisplayed(elementLocator);
             optionElement.Click();
             this.Driver.DoWait(3);
+            return this;
         }
     }
 }

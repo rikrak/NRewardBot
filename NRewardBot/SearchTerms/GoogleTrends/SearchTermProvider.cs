@@ -82,10 +82,10 @@ namespace NRewardBot.SearchTerms.GoogleTrends
             var offsets = new List<int>();
             while (offsets.Count < numberOfDates)
             {
-                var candidate = Randomiser.Next(0, 20);
+                var candidate = -Randomiser.Next(0, 20);
                 if (!offsets.Contains(candidate))
                 {
-                    offsets.Add(-candidate);
+                    offsets.Add(candidate);
                 }
             }
             for (int i = 0; i < numberOfDates; i++)

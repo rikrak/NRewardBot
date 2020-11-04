@@ -14,7 +14,7 @@ namespace NRewardBot.Selenium.Page
         {
         }
 
-        public override void CompleteOffer()
+        public override IOfferPage CompleteOffer()
         {
             Log.Info("Completing an explore page");
             for (int i = 0; i < 3; i++)
@@ -22,6 +22,8 @@ namespace NRewardBot.Selenium.Page
                 this.PageElement.SendKeys(Keys.End);
                 this.PageElement.SendKeys(Keys.Home);
             }
+
+            return this;
         }
     }
 }

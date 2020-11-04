@@ -21,7 +21,7 @@ namespace NRewardBot.Selenium.Page
             return this.Driver.WaitUntilElementIsDisplayed(By.Id($"rqAnswerOption{idx}"), throwOnTimeout:false, TimeSpan.FromSeconds(2));
         }
 
-        public override void CompleteOffer()
+        public override IOfferPage CompleteOffer()
         {
             Log.Info("Attempting a lightening quiz");
             for (int i = 0; i < 10; i++)
@@ -49,6 +49,8 @@ namespace NRewardBot.Selenium.Page
 
             var completeButtonElement = this.Driver.WaitUntilElementIsDisplayed(By.CssSelector(".cico.btCloseBack"), throwOnTimeout: false);
             completeButtonElement?.Click();
+
+            return this;
         }
 
         public static bool IsLightningQuizPage(IWebDriver driver)

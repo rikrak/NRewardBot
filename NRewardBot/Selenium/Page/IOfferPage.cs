@@ -2,7 +2,8 @@
 {
     public interface IOfferPage
     {
-        void CompleteOffer();
+        IOfferPage AcceptCookies();
+        IOfferPage CompleteOffer();
         void Close();
     }
 }

@@ -42,9 +42,10 @@ namespace NRewardBot.Selenium
                 {
                     driver.DoWait(3);
                     var offerPage = link.Click();
-                    offerPage?.CompleteOffer();
-                    offerPage?.Close();
-
+                    offerPage
+                        ?.AcceptCookies()
+                        .CompleteOffer()
+                        .Close();
 
                     rewardDashboard.SwitchTo();
                 }
@@ -66,6 +67,7 @@ namespace NRewardBot.Selenium
                 .PressSubmit()
                 .DoMultiFactorAuth()
                 .PressStayLoggedIn();
+            login.CheckForPasswordError();
 
             return Task.CompletedTask;
         }

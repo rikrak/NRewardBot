@@ -15,29 +15,36 @@ namespace NRewardBot.Cmd
 
         static async Task Main(string[] args)
         {
-            Log.Info("Started");
-            NLogConfiguration.Bootstrap();
-            var configFactory = new ConfigurationFactory();
-            var config = configFactory.GetConfiguration(args);
-
-            var driver = new DriverManager(config);
-
-            var webDriverFactory = new WebDriverFactory(config, driver);
-
-            if (config.Quiz)
+            try
             {
-                var rewardScenario = new RewardScenario(webDriverFactory, config);
-                await rewardScenario.DailyOffers();
-            }
+                Log.Info("Started");
+                NLogConfiguration.Bootstrap();
+                var configFactory = new ConfigurationFactory();
+                var config = configFactory.GetConfiguration(args);
 
-            if (config.Desktop || config.Mobile)
+                var driver = new DriverManager(config);
+
+                var webDriverFactory = new WebDriverFactory(config, driver);
+
+                if (config.Quiz)
+                {
+                    var rewardScenario = new RewardScenario(webDriverFactory, config);
+                    await rewardScenario.DailyOffers();
+                }
+
+                if (config.Desktop || config.Mobile)
+                {
+                    var searchTermProvider = new SearchTermProvider();
+                    var searchScenario = new SearchScenario(webDriverFactory, config, searchTermProvider, config);
+                    await searchScenario.DoSearches();
+                }
+
+                Log.Info("All Done");
+            }
+            catch (Exception e)
             {
-                var searchTermProvider = new SearchTermProvider();
-                var searchScenario = new SearchScenario(webDriverFactory, config, searchTermProvider, config);
-                await searchScenario.DoSearches();
+                Log.Error(e);
             }
-
-            Log.Info("All Done");
         }
     }
 }
