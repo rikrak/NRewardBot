@@ -29,6 +29,7 @@ namespace NRewardBot.Selenium.Page
 
         public BingSearchPage EnsureLoggedIn()
         {
+            Log.Trace("EnsureLoggedIn");
             // check for Desktop and mobile version of login button
             var loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("id_l"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
             if (loginButton == null)
@@ -44,8 +45,33 @@ namespace NRewardBot.Selenium.Page
 
         public BingSearchPage AcceptCookies()
         {
+            Log.Trace("AcceptCookies");
+            
+            // I think the "accept Cookies" button moves around a little bit, so let the page settle first
+            this.Driver.DoWait(2);
+
             var cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-            cookieButton?.Click();
+            if (cookieButton != null)
+            {
+                var i = 3;
+                while (i-- > 0)
+                {
+                    try
+                    {
+                        if (cookieButton != null)
+                        {
+                            cookieButton.Click();
+                            i = 0;
+                            Log.Trace("Cookies Accepted");
+                        }
+                    }
+                    catch (OpenQA.Selenium.NoSuchElementException e)
+                    {
+                        Log.Debug("Cookie Button was stale");
+                        cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(2));
+                    }
+                }
+            }
             return this;
         }
 
