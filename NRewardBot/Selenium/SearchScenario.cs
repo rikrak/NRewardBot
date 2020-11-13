@@ -45,6 +45,9 @@ namespace NRewardBot.Selenium
 
         private async Task DoSearches(string userAgent)
         {
+            var isMobile = userAgent == UserAgent.Mobile;
+            var maxPoints = isMobile ? 60 : 90;
+
             using (var driver = await _driverFactory.GetDriver(userAgent))
             {
                 var loginTask = DoLogin(driver);
@@ -60,14 +63,22 @@ namespace NRewardBot.Selenium
                 var searchPage = BingSearchPage.NavigateTo(driver);
                 searchPage = searchPage.EnsureLoggedIn().AcceptCookies();
                 
-                var maxSearches = userAgent == UserAgent.Mobile ? 20 : 30;
+                var maxSearches = isMobile ? 20 : 30;
+                maxSearches += 5;  // add some "padding" in case some searches don't register
+
                 foreach (var searchTerm in searchTerms)
                 {
                     searchPage.Search(searchTerm);
-                    if (--maxSearches < 0)
+
+                    var tallyPage = RewardStatusPage.NavigateTo(driver);
+                    var complete = isMobile ? tallyPage.MobileSearchComplete() : tallyPage.PcSearchComplete();
+
+                    if (--maxSearches < 0 || complete)
                     {
+                        Log.Info("Stopped searching");
                         break;
                     }
+
                 }
 
                 driver.Close();
