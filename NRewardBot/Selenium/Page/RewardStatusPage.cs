@@ -31,6 +31,19 @@ namespace NRewardBot.Selenium.Page
             return rewardStatusPage;
         }
 
+        public bool IsLevelOne()
+        {
+            var credits = CreditsElement;
+            var searchElement = credits.WaitUntilElementIsDisplayed(By.ClassName("allsearch"), throwOnTimeout:false, TimeSpan.FromMilliseconds(500));
+
+            return searchElement != null;
+        }
+
+        public bool AllSearchComplete()
+        {
+            return SearchComplete(By.ClassName("allsearch"));
+        }
+
         public bool PcSearchComplete()
         {
             return SearchComplete(By.ClassName("pcsearch"));
@@ -46,7 +59,7 @@ namespace NRewardBot.Selenium.Page
             var tally = GetSearchTally(rootElement);
             var total = GetSearchTotal(rootElement);
 
-            Log.Info("Tompleted {tally} of {total}", tally, total);
+            Log.Info("Completed {tally} of {total}", tally, total);
             return tally >= total;
         }
 

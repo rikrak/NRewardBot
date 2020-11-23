@@ -66,12 +66,27 @@ namespace NRewardBot.Selenium
                 var maxSearches = isMobile ? 20 : 30;
                 maxSearches += 5;  // add some "padding" in case some searches don't register
 
+                bool? isLevelOne = null;
+
                 foreach (var searchTerm in searchTerms)
                 {
                     searchPage.Search(searchTerm);
 
                     var tallyPage = RewardStatusPage.NavigateTo(driver);
-                    var complete = isMobile ? tallyPage.MobileSearchComplete() : tallyPage.PcSearchComplete();
+                    if (isLevelOne == null)
+                    {
+                        isLevelOne = tallyPage.IsLevelOne();
+                    }
+                    
+                    bool complete;
+                    if (isLevelOne.Value)
+                    {
+                        complete = tallyPage.AllSearchComplete();
+                    }
+                    else
+                    {
+                        complete = isMobile ? tallyPage.MobileSearchComplete() : tallyPage.PcSearchComplete();
+                    }
 
                     if (--maxSearches < 0 || complete)
                     {
