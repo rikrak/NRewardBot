@@ -1,0 +1,20 @@
+﻿[*.cs]
+
+# Default severity for analyzer diagnostics with category 'Globalization'
+dotnet_analyzer_diagnostic.category-globalization.severity=none
+
+
+[*.proto]
+indent_style=space
+indent_size=4
+tab_width=4
+
+[*.{asax,ascx,aspx,cs,cshtml,css,htm,html,js,jsx,master,razor,skin,sql,ts,tsx,vb,xaml,xamlx,xoml}]
+indent_style=space
+indent_size=4
+tab_width=4
+
+[*.{appxmanifest,axml,build,config,csproj,dbml,discomap,dtd,json,jsproj,lsproj,njsproj,nuspec,proj,props,resjson,resw,resx,StyleCop,targets,tasks,vbproj,xml,xsd}]
+indent_style=space
+indent_size=2
+tab_width=2

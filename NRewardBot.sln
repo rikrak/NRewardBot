@@ -9,7 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9A8E366C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit.NRewardBot", "Tests\Tests.Unit.NRewardBot\Tests.Unit.NRewardBot.csproj", "{561EC622-7AD9-4D59-9819-385D5FCDF947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRewardBot.Cmd", "NRewardBot.Cmd\NRewardBot.Cmd.csproj", "{A85F5CD4-467F-4CDA-8E47-DA6ABE97FFA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRewardBot.Cmd", "NRewardBot.Cmd\NRewardBot.Cmd.csproj", "{A85F5CD4-467F-4CDA-8E47-DA6ABE97FFA1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A8695077-E741-43C1-B5FC-BDF53E8D10F4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9B994644-4AE5-4682-912E-C132880FC961}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
