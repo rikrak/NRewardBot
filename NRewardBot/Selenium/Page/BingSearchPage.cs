@@ -34,12 +34,23 @@ namespace NRewardBot.Selenium.Page
             var loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("id_l"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
             if (loginButton == null)
             {
+                Log.Debug("Checking for mobile login");
                 var burgerMenu = this.Driver.WaitUntilElementIsDisplayed(By.Id("mHamburger"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
                 burgerMenu?.Click();
                 loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("hb_s"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
             }
-                
-            loginButton?.Click();
+
+            if (loginButton == null)
+            {
+                Log.Debug("No login button found");
+            }
+            else
+            {
+                // just wait a tick - sometimes the login button click doesn't work if done too quickly
+                this.Driver.DoWait(1);
+                Log.Debug("Clicking login button");
+                loginButton.Click();
+            }
             return this;
         }
 
@@ -80,6 +91,7 @@ namespace NRewardBot.Selenium.Page
             Log.Info("Searching for: {term}", term);
             this.Driver.Navigate().GoToUrl(PageUrl);
             this.Driver.WaitUntilElementIsDisplayed(By.Id(SearchTermElementId));
+            this.Driver.DoWait(1);
             this.SearchTermInputElement.ClearAndSendKeys(term);
             this.Driver.DoWait(1);
             this.SearchTermInputElement.SendKeys(Keys.Return);

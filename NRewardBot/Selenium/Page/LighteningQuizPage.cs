@@ -11,6 +11,7 @@ namespace NRewardBot.Selenium.Page
         #endregion
 
         public const string AnswerOption1Id = "rqAnswerOption0";
+        public const string StartQuizId = "rqStartQuiz";
 
         public LighteningQuizPage(IWebDriver driver) : base(driver)
         {
@@ -21,9 +22,17 @@ namespace NRewardBot.Selenium.Page
             return this.Driver.WaitUntilElementIsDisplayed(By.Id($"rqAnswerOption{idx}"), throwOnTimeout:false, TimeSpan.FromSeconds(2));
         }
 
+        private void StartQuiz()
+        {
+            var startButton = this.Driver.WaitUntilElementIsDisplayed(By.Id(StartQuizId), throwOnTimeout:false, TimeSpan.FromSeconds(2));
+            startButton?.Click();
+        }
+
         public override IOfferPage CompleteOffer()
         {
             Log.Info("Attempting a lightening quiz");
+            this.StartQuiz();
+
             for (int i = 0; i < 10; i++)
             {
                 var firstAnswer = GetAnswerOption(0);

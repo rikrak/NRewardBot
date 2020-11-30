@@ -61,7 +61,9 @@ namespace NRewardBot.Selenium
                 searchTerms.Shuffle();
 
                 var searchPage = BingSearchPage.NavigateTo(driver);
-                searchPage = searchPage.EnsureLoggedIn().AcceptCookies();
+                searchPage = searchPage
+                    .EnsureLoggedIn()
+                    .AcceptCookies();
                 
                 var maxSearches = isMobile ? 20 : 30;
                 maxSearches += 5;  // add some "padding" in case some searches don't register
