@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using NRewardBot.Config;
-using NRewardBot.SearchTerms.GoogleTrends;
 using NRewardBot.Selenium.Page;
 using OpenQA.Selenium;
 
@@ -43,6 +41,8 @@ namespace NRewardBot.Selenium
                     driver.DoWait(3);
                     var offerPage = link.Click();
                     offerPage
+                        ?.AcceptCookies()
+                        ?.EnsureLoggedIn()
                         ?.AcceptCookies()
                         .CompleteOffer()
                         .Close();

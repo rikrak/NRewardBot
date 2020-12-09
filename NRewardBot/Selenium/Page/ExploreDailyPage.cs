@@ -2,7 +2,7 @@
 
 namespace NRewardBot.Selenium.Page
 {
-    public class ExploreDailyPage : OfferPageBase, IOfferPage
+    internal class ExploreDailyPage : OfferPageBase, IOfferPage
     {
         #region Logger
         private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();

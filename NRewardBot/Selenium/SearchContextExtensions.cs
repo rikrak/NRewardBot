@@ -64,6 +64,46 @@ namespace NRewardBot.Selenium
                 : null;
         }
 
+        /// <summary>
+        /// Waits until a given element exists in the DOM, or until the timeout has been exhausted.
+        /// </summary>
+        /// <remarks>
+        /// This method does not require the element to be visible, just that it exists in the DOM
+        /// </remarks>
+        /// <param name="context"></param>
+        /// <param name="elementLocator"></param>
+        /// <param name="throwOnTimeout"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public static IWebElement WaitUntilElementIsAvailable(this ISearchContext context, By elementLocator, bool throwOnTimeout = true, TimeSpan? timeout = null)
+        {
+            timeout = timeout ?? StandardTimeout;
+            Log.Debug($"Waiting for {elementLocator}");
+            var isAvailable = context.WaitUntil(d =>
+            {
+                try
+                {
+                    var elementToCheck = context.FindElement(elementLocator);
+                    Log.Debug($"Element {elementLocator} is available");
+                    return elementToCheck != null;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    Log.Debug($"Element {elementLocator} is Stale");
+                    return false;
+                }
+                catch (NoSuchElementException)
+                {
+                    Log.Debug($"Element {elementLocator} cannot be found");
+                    return false;
+                }
+            }, throwOnTimeout, timeout);
+
+            return isAvailable
+                ? context.FindElement(elementLocator)
+                : null;
+        }
+
         public static TResult WaitUntil<TResult>(this ISearchContext context, Func<ISearchContext, TResult> condition, bool throwOnTimeout = true, TimeSpan? timeout = null)
         {
             timeout = timeout ?? StandardTimeout;

@@ -1,10 +1,9 @@
 ﻿using System;
-using NRewardBot.Selenium.Elements;
 using OpenQA.Selenium;
 
 namespace NRewardBot.Selenium.Page
 {
-    internal class BingSearchPage : PageBase
+    public class BingSearchPage : BingSearchPageBase
     {
         #region Logger
         private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
@@ -27,64 +26,8 @@ namespace NRewardBot.Selenium.Page
             return new BingSearchPage(driver);
         }
 
-        public BingSearchPage EnsureLoggedIn()
-        {
-            Log.Trace("EnsureLoggedIn");
-            // check for Desktop and mobile version of login button
-            var loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("id_l"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-            if (loginButton == null)
-            {
-                Log.Debug("Checking for mobile login");
-                var burgerMenu = this.Driver.WaitUntilElementIsDisplayed(By.Id("mHamburger"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-                burgerMenu?.Click();
-                loginButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("hb_s"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-            }
-
-            if (loginButton == null)
-            {
-                Log.Debug("No login button found");
-            }
-            else
-            {
-                // just wait a tick - sometimes the login button click doesn't work if done too quickly
-                this.Driver.DoWait(1);
-                Log.Debug("Clicking login button");
-                loginButton.Click();
-            }
-            return this;
-        }
-
-        public BingSearchPage AcceptCookies()
-        {
-            Log.Trace("AcceptCookies");
-            
-            // I think the "accept Cookies" button moves around a little bit, so let the page settle first
-            this.Driver.DoWait(2);
-
-            var cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-            if (cookieButton != null)
-            {
-                var i = 3;
-                while (i-- > 0)
-                {
-                    try
-                    {
-                        if (cookieButton != null)
-                        {
-                            cookieButton.Click();
-                            i = 0;
-                            Log.Trace("Cookies Accepted");
-                        }
-                    }
-                    catch (OpenQA.Selenium.NoSuchElementException e)
-                    {
-                        Log.Debug("Cookie Button was stale");
-                        cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(2));
-                    }
-                }
-            }
-            return this;
-        }
+        public BingSearchPage EnsureLoggedIn() => this.EnsureLoggedIn<BingSearchPage>();
+        public BingSearchPage AcceptCookies() => this.AcceptCookies<BingSearchPage>();
 
         public BingSearchPage Search(string term)
         {

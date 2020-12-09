@@ -46,7 +46,6 @@ namespace NRewardBot.Selenium
         private async Task DoSearches(string userAgent)
         {
             var isMobile = userAgent == UserAgent.Mobile;
-            var maxPoints = isMobile ? 60 : 90;
 
             using (var driver = await _driverFactory.GetDriver(userAgent))
             {

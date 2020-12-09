@@ -45,6 +45,10 @@ namespace NRewardBot.Cmd
             {
                 Log.Error(e);
             }
+
+            // wait for user to acknowledge
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
         }
     }
 }

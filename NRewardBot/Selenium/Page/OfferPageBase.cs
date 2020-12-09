@@ -1,10 +1,8 @@
-﻿using System;
-using NRewardBot.Selenium.Elements;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 
 namespace NRewardBot.Selenium.Page
 {
-    public abstract class OfferPageBase : PageBase, IOfferPage
+    public abstract class OfferPageBase : BingSearchPageBase, IOfferPage
     {
         protected OfferPageBase(IWebDriver driver) : base(driver)
         {
@@ -12,12 +10,9 @@ namespace NRewardBot.Selenium.Page
 
         public abstract IOfferPage CompleteOffer();
 
-        public IOfferPage AcceptCookies()
-        {
-            var cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(1));
-            cookieButton?.Click();
-            return this;
-        }
+        IOfferPage IOfferPage.EnsureLoggedIn() => this.EnsureLoggedIn<OfferPageBase>();
+
+        IOfferPage IOfferPage.AcceptCookies() => this.AcceptCookies<OfferPageBase>();
 
         public void Close()
         {
