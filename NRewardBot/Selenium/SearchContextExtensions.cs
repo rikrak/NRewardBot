@@ -24,6 +24,16 @@ namespace NRewardBot.Selenium
             }
         }
 
+        /// <summary>
+        /// Waits until a given element is displayed
+        /// </summary>
+        /// <param name="context">Search Context</param>
+        /// <param name="elementLocator">The Element's locator</param>
+        /// <param name="throwOnTimeout">If the element is not found, should an exception be thrown?</param>
+        /// <param name="timeout">How long to wait for the element</param>
+        /// <returns>
+        /// The element, if it was found, otherwise null.
+        /// </returns>
         public static IWebElement WaitUntilElementIsDisplayed(this ISearchContext context, By elementLocator, bool throwOnTimeout = true, TimeSpan? timeout = null)
         {
             timeout = timeout ?? StandardTimeout;

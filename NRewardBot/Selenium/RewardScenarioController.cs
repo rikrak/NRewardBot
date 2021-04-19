@@ -61,13 +61,7 @@ namespace NRewardBot.Selenium
             Log.Info("Processing login to Microsoft account");
             var login = LiveLoginPage.NavigateTo(driver);
             driver.DoWait(2);
-            login.WithUsername(this._credentials.Username)
-                .PressNext()
-                .WithPassword(this._credentials.Password)
-                .PressSubmit()
-                .DoMultiFactorAuth()
-                .PressStayLoggedIn();
-            login.CheckForPasswordError();
+            login.ProcessLogin(this._credentials);
 
             return Task.CompletedTask;
         }
