@@ -45,52 +45,11 @@ namespace NRewardBot.Selenium
                 }
             }
         }
-
-#if obsolete
-        public static IWebElement WaitUntilElementIsDisplayed(this IWebDriver driver, By elementLocator, bool throwOnTimeout = true, TimeSpan? timeout = null)
-        {
-            timeout = timeout ?? StandardTimeout;
-            Debug.WriteLine($"Waiting for {elementLocator}");
-            var isDisplayed = driver.WaitUntil(d =>
-            {
-                try
-                {
-                    var elementToCheck = driver.FindElement(elementLocator);
-                    var displayed = elementToCheck.Displayed;
-                    Debug.WriteLine($"Element {elementLocator} is {(displayed ? "" : "not ")}displayed");
-                    if (!displayed)
-                    {
-                        Debug.WriteLine($"  Enabled:     {elementToCheck.Enabled}");
-                        Debug.WriteLine($"  Location:    {elementToCheck.Location}");
-                        Debug.WriteLine($"  Size:        {elementToCheck.Size}");
-                        Debug.WriteLine($"  Text:        {elementToCheck.Text}");
-                        Debug.WriteLine($"  Style:       {elementToCheck.GetAttribute("style")}");
-                        Debug.WriteLine($"  Class:       {elementToCheck.GetAttribute("class")}");
-                        Debug.WriteLine($"  css-display: {elementToCheck.GetCssValue("display")}");
-                    }
-                    return displayed;
-                }
-                catch (StaleElementReferenceException)
-                {
-                    Debug.WriteLine($"Element {elementLocator} is Stale");
-                    return false;
-                }
-                catch (NoSuchElementException)
-                {
-                    Debug.WriteLine($"Element {elementLocator} cannot be found");
-                    return false;
-                }
-            }, throwOnTimeout, timeout);
-
-            return isDisplayed
-                ? driver.FindElement(elementLocator)
-                : null;
-        }
-#endif
+        
         public static TResult WaitUntil<TResult>(this IWebDriver driver, Func<IWebDriver, TResult> condition, bool throwOnTimeout = true, TimeSpan? timeout = null)
         {
             Debug.WriteLine($"WaitUntil - {condition.Method.Name} ");
-            timeout = timeout ?? StandardTimeout;
+            timeout ??= StandardTimeout;
 
             var wait = new WebDriverWait(driver, timeout.Value);
             TResult result = default(TResult);

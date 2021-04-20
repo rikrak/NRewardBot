@@ -40,12 +40,25 @@ namespace NRewardBot.Selenium
             return Task.CompletedTask;
         }
 
+        private string GetCurrentVersion()
+        {
+            var unzipLocation = GetDriverFolder();
+            var versionFilePath = Path.Combine(unzipLocation, "chromedriver.version.txt");
+            if (File.Exists(versionFilePath))
+            {
+                return File.ReadAllText(versionFilePath);
+            }
+
+            return null;
+        }
+
         public async Task<string> GetLatestDriver()
         {
             Log.Info("Getting the latest Chrome Driver version from {url}", _config.SeleniumUrl);
             string latestVersion;
+            string currentVersion = GetCurrentVersion();
+            var unzipLocation = GetDriverFolder();
 
-            await ClearOldDriver();
             using (var client = new HttpClient())
             {
                 var versionUrl = _config.SeleniumUrl;
@@ -53,6 +66,18 @@ namespace NRewardBot.Selenium
 
                 latestVersion = await client.GetStringAsync(versionUrl);
             }
+
+            if (string.Equals(latestVersion, currentVersion))
+            {
+                var driverFile = Directory.GetFiles(unzipLocation, "chromedriver.exe").FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(driverFile))
+                {
+                    Log.Info("latest version of the driver already installed");
+                    return driverFile;
+                }
+            }
+
+            await ClearOldDriver();
 
             using (var client = new HttpClient())
             {
@@ -75,7 +100,6 @@ namespace NRewardBot.Selenium
                 }
                 Log.Info("Getting Chrome Driver version {version} from {url}", latestVersion, url);
 
-                var unzipLocation = GetDriverFolder();
                 string driverFilePath;
                 using (var driverStream = await client.GetStreamAsync(url))
                 {

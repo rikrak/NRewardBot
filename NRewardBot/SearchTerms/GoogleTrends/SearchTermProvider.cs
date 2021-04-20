@@ -25,50 +25,100 @@ namespace NRewardBot.SearchTerms.GoogleTrends
         {
             var terms = new List<string>();
 
-            Action<string> addTerm = (string term) =>
+            var tasks = new List<Task<IReadOnlyCollection<string>>>();
+
+            foreach (var date in GetDates())
             {
-                term = term.ToLower();
-                if (!terms.Contains(term, StringComparer.InvariantCultureIgnoreCase))
+                tasks.Add(this.GetTerms(date));
+            }
+
+            foreach (var theseTerms in await Task.WhenAll(tasks))
+            {
+                terms.AddRange(theseTerms);
+            }
+
+            return terms.Distinct().ToArray();
+
+
+            //Action<string> addTerm = (string term) =>
+            //{
+            //    term = term.ToLower();
+            //    if (!terms.Contains(term, StringComparer.InvariantCultureIgnoreCase))
+            //    {
+            //        terms.Add(term);
+            //    }
+            //};
+
+            //using (var client = new HttpClient())
+            //{
+            //    foreach (var date in GetDates())
+            //    {
+            //        Log.Info("Getting search terms from Google Trends for {date}", date.ToShortDateString());
+            //        var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=GB&ns=15";
+            //        client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+
+            //        var trendsRaw = await client.GetStringAsync(url);
+            //        // for some reason the results are always prefixed with ")]}'," which makes the json invalid!
+            //        trendsRaw = trendsRaw.Substring(")]}',".Length);
+
+            //        var trends = JsonConvert.DeserializeObject<GoogleTrends>(trendsRaw);
+            //        var trendingSearchesDay = trends?.Default?.TrendingSearchesDays.FirstOrDefault();
+            //        if (trendingSearchesDay != null)
+            //        {
+            //            var searches = trendingSearchesDay.TrendingSearches;
+            //            foreach (var search in searches)
+            //            {
+            //                var term = search.Title.Query;
+            //                addTerm(term);
+
+            //                foreach (var relatedQuery in search.RelatedQueries)
+            //                {
+            //                    addTerm(relatedQuery.Query);
+            //                }
+            //            }
+            //        }
+
+            //        await Task.Delay(TimeSpan.FromSeconds(Randomiser.Next(3, 5)));
+
+            //    }
+            //}
+
+            //return terms;
+        }
+
+        private async Task<IReadOnlyCollection<string>> GetTerms(DateTime date)
+        {
+            var terms = new List<string>();
+
+            using var client = new HttpClient();
+            Log.Info("Getting search terms from Google Trends for {date}", date.ToShortDateString());
+            var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=GB&ns=15";
+            client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+
+            var trendsRaw = await client.GetStringAsync(url);
+            // for some reason the results are always prefixed with ")]}'," which makes the json invalid!
+            trendsRaw = trendsRaw.Substring(")]}',".Length);
+
+            var trends = JsonConvert.DeserializeObject<GoogleTrends>(trendsRaw);
+            var trendingSearchesDay = trends?.Default?.TrendingSearchesDays.FirstOrDefault();
+            if (trendingSearchesDay != null)
+            {
+                var searches = trendingSearchesDay.TrendingSearches;
+                foreach (var search in searches)
                 {
+                    var term = search.Title.Query;
                     terms.Add(term);
-                }
-            };
 
-            using (var client = new HttpClient())
-            {
-                foreach (var date in GetDates())
-                {
-                    Log.Info("Getting search terms from Google Trends for {date}", date.ToShortDateString());
-                    var url = $"https://trends.google.com/trends/api/dailytrends?hl=en-US&ed={date:yyyyMMdd}&geo=GB&ns=15";
-                    client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-
-                    var trendsRaw = await client.GetStringAsync(url);
-                    // for some reason the results are always prefixed with ")]}'," which makes the json invalid!
-                    trendsRaw = trendsRaw.Substring(")]}',".Length);
-
-                    var trends = JsonConvert.DeserializeObject<GoogleTrends>(trendsRaw);
-                    var trendingSearchesDay = trends?.Default?.TrendingSearchesDays.FirstOrDefault();
-                    if (trendingSearchesDay != null)
+                    foreach (var relatedQuery in search.RelatedQueries)
                     {
-                        var searches = trendingSearchesDay.TrendingSearches;
-                        foreach (var search in searches)
-                        {
-                            var term = search.Title.Query;
-                            addTerm(term);
-
-                            foreach (var relatedQuery in search.RelatedQueries)
-                            {
-                                addTerm(relatedQuery.Query);
-                            }
-                        }
+                        terms.Add(relatedQuery.Query);
                     }
-
-                    await Task.Delay(TimeSpan.FromSeconds(Randomiser.Next(3, 5)));
-
                 }
             }
 
-            return terms;
+            //await Task.Delay(TimeSpan.FromSeconds(Randomiser.Next(3, 5)));
+
+            return terms.Select(t => t.ToLower()).Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
         }
 
         /// <summary>

@@ -124,6 +124,28 @@ namespace NRewardBot.Selenium.Page
             if (authStrategy == AuthenticationMechanism.AuthenticatorApp)
             {
                 // do what?
+                var timeout = TimeSpan.FromSeconds(60);
+                // wait until the auth app page is no longer displayed
+                this.Driver.WaitUntil(d =>
+                {
+                    try
+                    {
+                        var _ = d.FindElement(By.Id(AuthAppId));
+                        Log.Debug("Auth App page is still displayed");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        Log.Debug("Auth App page is no longer displayed");
+                        return true;
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        Log.Debug("Auth App page is no longer displayed");
+                        return true;
+                    }
+
+                    return false;
+                }, throwOnTimeout: false, timeout: timeout);
             }
 
             if (authStrategy == AuthenticationMechanism.Undefined)
@@ -136,20 +158,60 @@ namespace NRewardBot.Selenium.Page
 
         private AuthenticationMechanism GetAuthMechanism()
         {
-            var pwdElement = this.Driver.WaitUntilElementIsDisplayed(By.Name(PasswordInputName), throwOnTimeout: false, timeout: new TimeSpan(0,0,0,5));
+            var timeout = TimeSpan.FromSeconds(5);
+            Log.Debug($"Determining the Auth Mechanism");
+            AuthenticationMechanism result = AuthenticationMechanism.Undefined;
 
-            if (pwdElement != null)
+            this.Driver.WaitUntil(d =>
             {
-                return AuthenticationMechanism.Password;
-            }
-            var authElement = this.Driver.WaitUntilElementIsDisplayed(By.Id(AuthAppId), throwOnTimeout: false, timeout: new TimeSpan(0, 0, 0, 5));
+                var pwdLocator = By.Name(PasswordInputName);
+                var appAuthLocator = By.Id(AuthAppId);
 
-            if (authElement != null)
-            {
-                return AuthenticationMechanism.AuthenticatorApp;
-            }
+                IWebElement element = null;
+                
+                int i = 0;
 
-            return AuthenticationMechanism.Undefined;
+                while (element == null && i++ < 100)
+                {
+                    this.Driver.DoWait();
+                    var elementLocator = i % 2 == 0 ? pwdLocator : appAuthLocator;
+                    try
+                    {
+                        element = this.Driver.FindElement(elementLocator);
+                        var displayed = element?.Displayed;
+                        Log.Debug(() => $"{elementLocator} displayed: {displayed}");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        Log.Debug(() => $"Element {elementLocator} is stale");
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        Log.Debug(() => $"Element {elementLocator} cannot be found");
+                    }
+
+                }
+
+                if (element != null)
+                {
+                    var name = element.GetAttribute("name");
+                    var id = element.GetAttribute("id");
+
+                    if (string.Equals(name, PasswordInputName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        result = AuthenticationMechanism.Password;
+                    }
+                    if (string.Equals(id, AuthAppId, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        result = AuthenticationMechanism.AuthenticatorApp;
+                    }
+                }
+                Log.Info(() => $"Auth mechanism is {result}");
+                return element != null;
+            }, throwOnTimeout: false, timeout);
+
+
+            return result;
         }
 
         private enum AuthenticationMechanism
@@ -158,7 +220,5 @@ namespace NRewardBot.Selenium.Page
             Password,
             AuthenticatorApp
         }
-
-
     }
 }
