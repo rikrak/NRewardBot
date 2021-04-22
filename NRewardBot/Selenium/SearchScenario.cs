@@ -65,7 +65,7 @@ namespace NRewardBot.Selenium
                     .AcceptCookies();
                 
                 var maxSearches = isMobile ? 20 : 30;
-                maxSearches += 5;  // add some "padding" in case some searches don't register
+                maxSearches += 15;  // add some "padding" in case some searches don't register
 
                 bool? isLevelOne = null;
 

@@ -124,7 +124,7 @@ namespace NRewardBot.Selenium.Page
             if (authStrategy == AuthenticationMechanism.AuthenticatorApp)
             {
                 // do what?
-                var timeout = TimeSpan.FromSeconds(60);
+                var timeout = TimeSpan.FromSeconds(600);
                 // wait until the auth app page is no longer displayed
                 this.Driver.WaitUntil(d =>
                 {
