@@ -7,6 +7,8 @@ namespace NRewardBot.Selenium.Page
 {
     internal class RewardDashboardPage : PageBase
     {
+        private static NLog.ILogger Log = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly string _windowHandle;
         private const string PageUrl = "https://account.microsoft.com/rewards/dashboard";
 
@@ -26,6 +28,32 @@ namespace NRewardBot.Selenium.Page
             return new RewardDashboardPage(driver);
         }
 
+        public RewardDashboardPage SignInIfRequired()
+        {
+            Log.Info("Checking for signin page");
+            // A Sign in page can sometimes appear (even though we're signed in!)
+            var signInAction = this.Driver.WaitUntilElementIsAvailable(By.Id("raf-signin-link-id"), throwOnTimeout: false);
+            if (signInAction == null)
+            {
+                var actions = this.Driver.FindElements(By.CssSelector(".c-call-to-action"));
+
+                foreach (var act in actions)
+                {
+                    Log.Info(() => $"Action: {act.Text}");
+                }
+
+                 signInAction = actions.FirstOrDefault(a => a.Text.Contains("SIGN IN"));
+            }
+
+            if (signInAction != null)
+            {
+                Log.Info("Signin is required...");
+                signInAction.Click();
+                Log.Info("Signed in");
+                this.Driver.DoWait();
+            }
+            return this;
+        }
         public IReadOnlyCollection<OfferLinkElement> GetOpenOffers()
         {
             var pendingOfferIcons = this.Driver.FindElements(By.XPath("//span[contains(@class, \"mee-icon-AddMedium\")]"));

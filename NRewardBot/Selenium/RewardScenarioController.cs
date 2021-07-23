@@ -33,6 +33,7 @@ namespace NRewardBot.Selenium
 
                 Log.Info("Proecessing daily offers");
                 var rewardDashboard = RewardDashboardPage.NavigateTo(driver);
+                rewardDashboard.SignInIfRequired();
                 var openOfferLinks = rewardDashboard.GetOpenOffers();
                 
                 Log.Info("There are {count} offer(s)", openOfferLinks.Count);
