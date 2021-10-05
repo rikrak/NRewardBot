@@ -56,11 +56,29 @@ namespace NRewardBot.Selenium.Page
         }
         public IReadOnlyCollection<OfferLinkElement> GetOpenOffers()
         {
-            var pendingOfferIcons = this.Driver.FindElements(By.XPath("//span[contains(@class, \"mee-icon-AddMedium\")]"));
-            var parentElements = pendingOfferIcons.Select(poi => poi.FindElement(By.XPath("..//..//..//..")));
-            var offerLinks = parentElements.Select(pe => pe.FindElement(By.XPath("div[contains(@class, \"actionLink\")]//descendant::a")));
+            var doLinq = false;
+            if (doLinq)
+            {
+                var pendingOfferIcons = this.Driver.FindElements(By.XPath("//span[contains(@class, \"mee-icon-AddMedium\")]"));
+                var parentElements = pendingOfferIcons.Select(poi => poi.FindElement(By.XPath("..//..//..//..//..")));
+                var offerLinks = parentElements.Select(pe => pe.FindElement(By.XPath("div[contains(@class, \"actionLink\")]//descendant::span")));
 
-            return offerLinks.Select(l => new OfferLinkElement(this.Driver, l)).ToArray();
+                return offerLinks.Select(l => new OfferLinkElement(this.Driver, l)).ToArray();
+            }
+
+            var elements = new List<OfferLinkElement>();
+
+            var pois = this.Driver.FindElements(By.XPath("//span[contains(@class, \"mee-icon-AddMedium\")]"));
+            foreach (var poi in pois)
+            {
+                var pe = poi.FindElement(By.XPath("..//..//..//.."));
+                var actionLink = pe.FindElement(By.XPath("div[contains(@class, \"actionLink\")]"));
+                var offerLink = actionLink.FindElement(By.XPath("descendant::span"));
+
+                elements.Add(new OfferLinkElement(this.Driver, offerLink));
+            }
+
+            return elements;
         }
 
         public void SwitchTo()
