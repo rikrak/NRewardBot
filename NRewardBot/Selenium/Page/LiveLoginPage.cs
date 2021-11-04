@@ -116,7 +116,7 @@ namespace NRewardBot.Selenium.Page
 
                 this.WithPassword(credentials.Password)
                     .PressSubmit()
-                    .DoMultiFactorAuth()
+                    //.DoMultiFactorAuth()
                     .PressStayLoggedIn();
                 this.CheckForPasswordError();
             }
@@ -124,7 +124,7 @@ namespace NRewardBot.Selenium.Page
             if (authStrategy == AuthenticationMechanism.AuthenticatorApp)
             {
                 // do what?
-                var timeout = TimeSpan.FromSeconds(600);
+                var timeout = TimeSpan.FromMinutes(20);
                 // wait until the auth app page is no longer displayed
                 this.Driver.WaitUntil(d =>
                 {
