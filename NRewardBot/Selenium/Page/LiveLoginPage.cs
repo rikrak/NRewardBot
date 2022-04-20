@@ -1,7 +1,7 @@
 ﻿using System;
-using NRewardBot.Config;
 using NRewardBot.Selenium.Elements;
 using OpenQA.Selenium;
+using ICredentials = NRewardBot.Config.ICredentials;
 
 namespace NRewardBot.Selenium.Page
 {

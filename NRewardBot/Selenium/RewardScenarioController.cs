@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NRewardBot.Config;
 using NRewardBot.Selenium.Page;
 using OpenQA.Selenium;
+using ICredentials = NRewardBot.Config.ICredentials;
 
 namespace NRewardBot.Selenium
 {
