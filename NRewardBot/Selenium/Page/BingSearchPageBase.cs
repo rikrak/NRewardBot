@@ -69,7 +69,7 @@ namespace NRewardBot.Selenium.Page
                             Log.Trace("Cookies Accepted");
                         }
                     }
-                    catch (OpenQA.Selenium.NoSuchElementException e)
+                    catch (OpenQA.Selenium.NoSuchElementException)
                     {
                         Log.Debug("Cookie Button was stale");
                         cookieButton = this.Driver.WaitUntilElementIsDisplayed(By.Id("bnp_btn_accept"), throwOnTimeout: false, timeout: TimeSpan.FromSeconds(2));

@@ -22,7 +22,7 @@ namespace NRewardBot.Selenium.Page
             {
                 return driver.FindElement(By.Id(OptionIds[0])) != null;
             }
-            catch (NoSuchElementException e)
+            catch (NoSuchElementException)
             {
                 return false;
             }

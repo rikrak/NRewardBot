@@ -7,7 +7,7 @@ namespace NRewardBot.Selenium.Page
 {
     internal class RewardDashboardPage : PageBase
     {
-        private static NLog.ILogger Log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.ILogger Log = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly string _windowHandle;
         private const string PageUrl = "https://account.microsoft.com/rewards/dashboard";

@@ -66,14 +66,17 @@ namespace NRewardBot.Selenium.Page
             return this;
         }
 
-        public LiveLoginPage DoMultiFactorAuth()
+        public LiveLoginPage WaitForMultiFactorAuth()
         {
+            var now = DateTime.Now;
+            var timeout = now + TimeSpan.FromMinutes(2);
+
             Log.Warn("Waiting for Multi-Factor authentication");
             // after the multi-factor auth, the "Stay Logged in" page is displayed.
             // when this happens, we can move on
-            // If multi-factor auth is not enabled, then the "Stay Logged in" page is displayed and we move on too:-)
-            var multiFactor = this.Driver.WaitUntilElementIsDisplayed(By.Id(DoNotShowThisAgainId), throwOnTimeout: false, TimeSpan.FromSeconds(20));
-            while (multiFactor != null)
+            // If multi-factor auth is not enabled, then the "Stay Logged in" page is displayed and we move on too :-)
+            var multiFactor = this.Driver.WaitUntilElementIsDisplayed(By.Id(DoNotShowThisAgainId), throwOnTimeout: false, TimeSpan.FromSeconds(5));
+            while (multiFactor == null && DateTime.Now < timeout)
             {
                 // wait until the multi factor has been acknowledged by the User
                 Log.Warn("Waiting for Multi-Factor authentication");
@@ -113,10 +116,13 @@ namespace NRewardBot.Selenium.Page
 
             if (authStrategy == AuthenticationMechanism.Password)
             {
-
+                if (string.IsNullOrWhiteSpace(credentials.Password))
+                {
+                    Log.Warn(() => "Login requires a password, but no password was provided");
+                }
                 this.WithPassword(credentials.Password)
                     .PressSubmit()
-                    //.DoMultiFactorAuth()
+                    .WaitForMultiFactorAuth()
                     .PressStayLoggedIn();
                 this.CheckForPasswordError();
             }
