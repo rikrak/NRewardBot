@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using CommandLine;
 
@@ -24,28 +25,54 @@ namespace NRewardBot.Config
                 .WithParsed(o =>
                 {
                     attachDebugger = o.Debug;
-
-                    if (string.IsNullOrWhiteSpace(o.Username))
+                    if (attachDebugger)
                     {
-                        Console.WriteLine();
-                        Console.Write("Please enter you username:  ");
-                        configuration.Username = Console.ReadLine();
-                        Console.WriteLine();
-                    }
-                    else
-                    {
-                        configuration.Username = o.Username;
+                        System.Diagnostics.Debugger.Launch();
                     }
 
-                    if (string.IsNullOrWhiteSpace(o.Password))
+                    if (!string.IsNullOrWhiteSpace(o.Pin))
                     {
-                        Console.WriteLine();
-                        configuration.Password = ReadPassword();
-                        Console.WriteLine();
+                        ICredentials credentials;
+                        var credentialsManager = new FileCredentialsProvider();
+                        if (!string.IsNullOrWhiteSpace(o.Username) && !string.IsNullOrWhiteSpace(o.Password))
+                        {
+                            credentials = credentialsManager.SetCredentials(o.Username, o.Password, o.Pin);
+                        }
+                        else
+                        {
+                            credentials = credentialsManager.GetCredentials(o.Pin);
+                        }
+                        configuration.Username = credentials.Username;
+                        configuration.Password = credentials.Password;
                     }
-                    else
+
+                    if (string.IsNullOrWhiteSpace(configuration.Username))
                     {
-                        configuration.Password = o.Password;
+                        if (string.IsNullOrWhiteSpace(o.Username))
+                        {
+                            Console.WriteLine();
+                            Console.Write("Please enter you username:  ");
+                            configuration.Username = Console.ReadLine();
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            configuration.Username = o.Username;
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(configuration.Password))
+                    {
+                        if (string.IsNullOrWhiteSpace(o.Password))
+                        {
+                            Console.WriteLine();
+                            configuration.Password = ReadPassword();
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            configuration.Password = o.Password;
+                        }
                     }
 
                     if (o.All.HasValue && o.All.Value)

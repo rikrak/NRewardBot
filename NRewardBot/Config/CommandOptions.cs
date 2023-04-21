@@ -10,6 +10,9 @@ namespace NRewardBot.Config
         [Option('p', "password", Required = false)]
         public string Password { get; set; }
 
+        [Option('n', "pin", Required = false)]
+        public string Pin { get; set; }
+
         [Option('h', "headless")]
         public bool? Headless { get; set;  }
 
