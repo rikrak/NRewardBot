@@ -4,7 +4,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NRewardBot.Config;
+using NRewardBot.Selenium.ChromeDriverRepository;
 
 namespace NRewardBot.Selenium
 {
@@ -55,7 +57,7 @@ namespace NRewardBot.Selenium
         public async Task<string> GetLatestDriver()
         {
             Log.Info("Getting the latest Chrome Driver version from {url}", _config.SeleniumUrl);
-            string latestVersion;
+            string chromeDriverDownloadJsonData;
             string currentVersion = GetCurrentVersion();
             var unzipLocation = GetDriverFolder();
 
@@ -64,9 +66,11 @@ namespace NRewardBot.Selenium
                 var versionUrl = _config.SeleniumUrl;
                 client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
-                latestVersion = await client.GetStringAsync(versionUrl);
+                chromeDriverDownloadJsonData = await client.GetStringAsync(versionUrl);
             }
 
+            var chromeDriverDownloadData = JsonConvert.DeserializeObject<ChromeDriverDetails>(chromeDriverDownloadJsonData);
+            var latestVersion = chromeDriverDownloadData.Channels.Stable.Version;
             if (string.Equals(latestVersion, currentVersion))
             {
                 var driverFile = Directory.GetFiles(unzipLocation, "chromedriver.exe").FirstOrDefault();
@@ -79,25 +83,11 @@ namespace NRewardBot.Selenium
 
             await ClearOldDriver();
 
+            var stableChannel = chromeDriverDownloadData.Channels.Stable;
+            var platform = Environment.OSVersion.Platform.ToPlatform();
+            var url = stableChannel.Downloads.ChromeDriver.First(cd => cd.Platform == platform).Url;
             using (var client = new HttpClient())
             {
-                string url;
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.MacOSX:
-                        url = $"https://chromedriver.storage.googleapis.com/{latestVersion}/chromedriver_mac64.zip";
-                        break;
-                    case PlatformID.Unix:
-                        url = "https://chromedriver.storage.googleapis.com/{}/chromedriver_linux64.zip";
-                        break;
-                    case PlatformID.Win32NT:
-                    case PlatformID.Win32S:
-                    case PlatformID.Win32Windows:
-                        url = $"https://chromedriver.storage.googleapis.com/{latestVersion}/chromedriver_win32.zip";
-                        break;
-                    default:
-                        throw new NotSupportedException($"{Environment.OSVersion.Platform} is not supported");
-                }
                 Log.Info("Getting Chrome Driver version {version} from {url}", latestVersion, url);
 
                 string driverFilePath;
@@ -105,8 +95,8 @@ namespace NRewardBot.Selenium
                 {
                     using (var z = new ZipArchive(driverStream))
                     {
-                        var driverEntry = z.Entries.First(e => e.FullName.ToLower().Contains("chromedriver"));
-                        driverFilePath = Path.Combine(unzipLocation, driverEntry.FullName);
+                        var driverEntry = z.Entries.First(e => e.FullName.ToLower().Contains("chromedriver.exe"));
+                        driverFilePath = Path.Combine(unzipLocation, Path.GetFileName(driverEntry.FullName));
 
                         using (var fs = File.OpenWrite(driverFilePath))
                         {
