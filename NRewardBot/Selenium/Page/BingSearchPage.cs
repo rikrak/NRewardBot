@@ -38,7 +38,7 @@ namespace NRewardBot.Selenium.Page
             this.SearchTermInputElement.ClearAndSendKeys(term);
             this.Driver.DoWait(1);
             this.SearchTermInputElement.SendKeys(Keys.Return);
-            var wait = Random.Next(3, 8);
+            var wait = Random.Next(240, 360);
             this.Driver.DoWait(wait); // human-like delay
 
             return this;
